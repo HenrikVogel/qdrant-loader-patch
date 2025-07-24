@@ -29,7 +29,7 @@ class ApplicationFilter(logging.Filter):
             or record.name == "__main__"  # Allow logs from main module
             or record.name == "asyncio"  # Allow logs from asyncio
             or record.name == "main"  # Allow logs when started as a script
-            or record.name == "qdrant_loader_mcp_server"  # Allow logs from the package
+            or record.name.startswith("qdrant_loader_mcp_server")  # Allow logs from the package
         )
 
 
