@@ -3,20 +3,18 @@
 import re
 from typing import Any
 
-from openai import AsyncOpenAI
+from ..patch.openai import PatchedAsyncOpenAI
 
-from ..config import OpenAIConfig
+from ..config import OpenAIQueryConfig
 from ..utils.logging import LoggingConfig
 
 
 class QueryProcessor:
     """Query processor for handling search queries."""
 
-    def __init__(self, openai_config: OpenAIConfig):
+    def __init__(self, openai_config: OpenAIQueryConfig):
         """Initialize the query processor."""
-        self.openai_client: AsyncOpenAI | None = AsyncOpenAI(
-            api_key=openai_config.api_key
-        )
+        self.openai_client: PatchedAsyncOpenAI | None = PatchedAsyncOpenAI.from_config(openai_config)
         self.logger = LoggingConfig.get_logger(__name__)
 
     async def process_query(self, query: str) -> dict[str, Any]:
@@ -90,7 +88,7 @@ class QueryProcessor:
                 raise RuntimeError("OpenAI client not initialized")
 
             response = await self.openai_client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model=self.openai_client.model,
                 messages=[
                     {
                         "role": "system",

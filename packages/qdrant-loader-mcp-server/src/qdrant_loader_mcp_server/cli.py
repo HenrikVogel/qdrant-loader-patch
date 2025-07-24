@@ -112,12 +112,12 @@ async def handle_stdio(config: Config, log_level: str):
 
         # Initialize components
         search_engine = SearchEngine()
-        query_processor = QueryProcessor(config.openai)
+        query_processor = QueryProcessor(config.openai_query)
         mcp_handler = MCPHandler(search_engine, query_processor)
 
         # Initialize search engine
         try:
-            await search_engine.initialize(config.qdrant, config.openai)
+            await search_engine.initialize(config.qdrant, config.openai_embedding)
             if not disable_console_logging:
                 logger.info("Search engine initialized successfully")
         except Exception as e:
@@ -303,7 +303,6 @@ def cli(log_level: str = "INFO", config: Path | None = None) -> None:
         # Create and set the event loop
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-
         # Set up signal handlers
         for sig in (signal.SIGTERM, signal.SIGINT):
             loop.add_signal_handler(sig, lambda: asyncio.create_task(shutdown(loop)))
