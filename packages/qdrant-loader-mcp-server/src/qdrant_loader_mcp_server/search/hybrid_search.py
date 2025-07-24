@@ -1,11 +1,11 @@
 """Hybrid search implementation combining vector and keyword search."""
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 import numpy as np
-from openai import AsyncOpenAI
+from ..patch.openai import PatchedAsyncOpenAI
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
 from rank_bm25 import BM25Okapi
@@ -74,17 +74,17 @@ class HybridSearchResult:
     paragraph_count: int | None = None
 
     # 🔥 NEW: Semantic analysis (NLP results)
-    entities: list[dict | str] = None
-    topics: list[dict | str] = None
-    key_phrases: list[dict | str] = None
-    pos_tags: list[dict] = None
+    entities: list[dict | str] = field(default_factory=list)
+    topics: list[dict | str] = field(default_factory=list)
+    key_phrases: list[dict | str] = field(default_factory=list)
+    pos_tags: list[dict] = field(default_factory=list)
 
     # 🔥 NEW: Navigation context
     previous_section: str | None = None
     next_section: str | None = None
-    sibling_sections: list[str] = None
-    subsections: list[str] = None
-    document_hierarchy: list[str] = None
+    sibling_sections: list[str] = field(default_factory=list)
+    subsections: list[str] = field(default_factory=list)
+    document_hierarchy: list[str] = field(default_factory=list)
 
     # 🔥 NEW: Chunking context
     chunk_index: int | None = None
@@ -98,7 +98,7 @@ class HybridSearchResult:
     is_converted: bool = False
 
     # 🔥 NEW: Cross-references and enhanced context
-    cross_references: list[dict] = None
+    cross_references: list[dict] = field(default_factory=list)
     topic_analysis: dict | None = None
     content_type_context: str | None = None  # Human-readable content description
 
@@ -128,7 +128,7 @@ class HybridSearchEngine:
     def __init__(
         self,
         qdrant_client: QdrantClient,
-        openai_client: AsyncOpenAI,
+        openai_client: PatchedAsyncOpenAI,
         collection_name: str,
         vector_weight: float = 0.6,
         keyword_weight: float = 0.3,
@@ -208,7 +208,7 @@ class HybridSearchEngine:
         """Get embedding for text using OpenAI."""
         try:
             response = await self.openai_client.embeddings.create(
-                model="text-embedding-3-small",
+                model=self.openai_client.model,
                 input=text,
             )
             return response.data[0].embedding
