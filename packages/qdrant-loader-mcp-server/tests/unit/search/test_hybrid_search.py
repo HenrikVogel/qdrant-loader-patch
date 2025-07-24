@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import numpy as np
 import pytest
-from openai import AsyncOpenAI
+from qdrant_loader_mcp_server.patch.openai import PatchedAsyncOpenAI
 from qdrant_loader_mcp_server.search.hybrid_search import (
     HybridSearchEngine,
 )
@@ -81,7 +81,8 @@ def mock_qdrant_client():
 @pytest.fixture
 def mock_openai_client():
     """Create a mock OpenAI client."""
-    client = AsyncMock(spec=AsyncOpenAI)
+    client = AsyncMock(spec=PatchedAsyncOpenAI)
+    client.model = "test-model"
 
     # Mock embeddings response
     embedding_response = MagicMock()
@@ -565,5 +566,5 @@ async def test_get_embedding_success(hybrid_search, mock_openai_client):
 
     # Verify OpenAI API was called correctly
     mock_openai_client.embeddings.create.assert_called_once_with(
-        model="text-embedding-3-small", input="test text"
+        model=mock_openai_client.model, input="test text"
     )

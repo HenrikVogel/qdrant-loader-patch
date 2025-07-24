@@ -48,9 +48,9 @@ async def integration_handler():
     search_engine = SearchEngine()
 
     # Create OpenAI config for query processor
-    from qdrant_loader_mcp_server.config import OpenAIConfig
+    from qdrant_loader_mcp_server.config import OpenAIQueryConfig
 
-    openai_config = OpenAIConfig(api_key="test_key")
+    openai_config = OpenAIQueryConfig(api_key="test_key")
     query_processor = QueryProcessor(openai_config)
 
     # Patch external dependencies
@@ -60,22 +60,26 @@ async def integration_handler():
             return_value=mock_qdrant_client,
         ),
         patch(
-            "qdrant_loader_mcp_server.search.engine.AsyncOpenAI",
+            "qdrant_loader_mcp_server.search.engine.PatchedAsyncOpenAI",
             return_value=mock_openai_client,
-        ),
+        ) as PatchedOpenAIMock,
         patch(
-            "qdrant_loader_mcp_server.search.processor.AsyncOpenAI",
+            "qdrant_loader_mcp_server.search.processor.PatchedAsyncOpenAI",
             return_value=mock_openai_client,
         ),
     ):
 
+        # Override named constructor
+        PatchedOpenAIMock.from_config.return_value = mock_openai_client
+
         # Initialize components
-        from qdrant_loader_mcp_server.config import OpenAIConfig, QdrantConfig
+        from qdrant_loader_mcp_server.config import OpenAIEmbeddingConfig, QdrantConfig
 
         qdrant_config = QdrantConfig(api_key="test_key")
-        openai_config = OpenAIConfig(api_key="test_key")
+        openai_config = OpenAIEmbeddingConfig(api_key="test_key")
 
         await search_engine.initialize(qdrant_config, openai_config)
+        print(type(search_engine.openai_client))
 
         # Create handler
         handler = MCPHandler(search_engine, query_processor)
