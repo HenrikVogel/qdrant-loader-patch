@@ -79,7 +79,6 @@ async def integration_handler():
         openai_config = OpenAIEmbeddingConfig(api_key="test_key")
 
         await search_engine.initialize(qdrant_config, openai_config)
-        print(type(search_engine.openai_client))
 
         # Create handler
         handler = MCPHandler(search_engine, query_processor)
