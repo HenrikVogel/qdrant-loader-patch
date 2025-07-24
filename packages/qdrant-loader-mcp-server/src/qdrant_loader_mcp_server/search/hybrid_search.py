@@ -1,11 +1,11 @@
 """Hybrid search implementation combining vector and keyword search."""
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 import numpy as np
-from openai import AsyncOpenAI
+from ..patch.openai import PatchedAsyncOpenAI
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
 from rank_bm25 import BM25Okapi
@@ -62,7 +62,7 @@ class HybridSearchEngine:
     def __init__(
         self,
         qdrant_client: QdrantClient,
-        openai_client: AsyncOpenAI,
+        openai_client: PatchedAsyncOpenAI,
         collection_name: str,
         vector_weight: float = 0.6,
         keyword_weight: float = 0.3,
@@ -135,7 +135,7 @@ class HybridSearchEngine:
         """Get embedding for text using OpenAI."""
         try:
             response = await self.openai_client.embeddings.create(
-                model="text-embedding-3-small",
+                model=self.openai_client.model,
                 input=text,
             )
             return response.data[0].embedding

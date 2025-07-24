@@ -1,11 +1,11 @@
 """Search engine implementation for the MCP server."""
 
 
-from openai import AsyncOpenAI
+from ..patch.openai import PatchedAsyncOpenAI
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
 
-from ..config import OpenAIConfig, QdrantConfig
+from ..config import OpenAIEmbeddingConfig, QdrantConfig
 from ..utils.logging import LoggingConfig
 from .hybrid_search import HybridSearchEngine
 from .models import SearchResult
@@ -20,18 +20,18 @@ class SearchEngine:
         """Initialize the search engine."""
         self.client: QdrantClient | None = None
         self.config: QdrantConfig | None = None
-        self.openai_client: AsyncOpenAI | None = None
+        self.openai_client: PatchedAsyncOpenAI | None = None
         self.hybrid_search: HybridSearchEngine | None = None
         self.logger = LoggingConfig.get_logger(__name__)
 
     async def initialize(
-        self, config: QdrantConfig, openai_config: OpenAIConfig
+        self, config: QdrantConfig, openai_config: OpenAIEmbeddingConfig
     ) -> None:
         """Initialize the search engine with configuration."""
         self.config = config
         try:
             self.client = QdrantClient(url=config.url, api_key=config.api_key)
-            self.openai_client = AsyncOpenAI(api_key=openai_config.api_key)
+            self.openai_client = PatchedAsyncOpenAI.from_config(openai_config)
 
             # Ensure collection exists
             if self.client is None:
@@ -42,7 +42,7 @@ class SearchEngine:
                 self.client.create_collection(
                     collection_name=config.collection_name,
                     vectors_config=models.VectorParams(
-                        size=1536,  # Default size for OpenAI embeddings
+                        size=config.vector_size,
                         distance=models.Distance.COSINE,
                     ),
                 )
