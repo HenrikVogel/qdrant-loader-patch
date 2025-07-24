@@ -5,7 +5,7 @@ Tests for project-aware search functionality.
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from openai import AsyncOpenAI
+from qdrant_loader_mcp_server.patch.openai import PatchedAsyncOpenAI
 from qdrant_client import QdrantClient
 from qdrant_loader_mcp_server.search.engine import SearchEngine
 from qdrant_loader_mcp_server.search.hybrid_search import (
@@ -56,7 +56,7 @@ def mock_qdrant_client():
 @pytest.fixture
 def mock_openai_client():
     """Create a mock OpenAI client."""
-    client = AsyncMock(spec=AsyncOpenAI)
+    client = AsyncMock(spec=PatchedAsyncOpenAI)
 
     # Mock embedding response
     mock_response = MagicMock()

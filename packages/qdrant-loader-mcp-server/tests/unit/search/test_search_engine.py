@@ -41,7 +41,7 @@ async def test_search_engine_initialization(
             return_value=mock_qdrant_client,
         ),
         patch(
-            "qdrant_loader_mcp_server.search.engine.AsyncOpenAI",
+            "qdrant_loader_mcp_server.search.engine.PatchedAsyncOpenAI",
             return_value=mock_openai_client,
         ),
         patch(
@@ -94,7 +94,7 @@ async def test_search_engine_search(
             return_value=mock_qdrant_client,
         ),
         patch(
-            "qdrant_loader_mcp_server.search.engine.AsyncOpenAI",
+            "qdrant_loader_mcp_server.search.engine.PatchedAsyncOpenAI",
             return_value=mock_openai_client,
         ),
         patch(
@@ -132,7 +132,7 @@ async def test_search_engine_cleanup(
             return_value=mock_qdrant_client,
         ),
         patch(
-            "qdrant_loader_mcp_server.search.engine.AsyncOpenAI",
+            "qdrant_loader_mcp_server.search.engine.PatchedAsyncOpenAI",
             return_value=mock_openai_client,
         ),
         patch("qdrant_loader_mcp_server.search.engine.HybridSearchEngine"),
@@ -161,7 +161,7 @@ async def test_search_engine_collection_creation(
             return_value=mock_qdrant_client,
         ),
         patch(
-            "qdrant_loader_mcp_server.search.engine.AsyncOpenAI",
+            "qdrant_loader_mcp_server.search.engine.PatchedAsyncOpenAI",
             return_value=mock_openai_client,
         ),
         patch("qdrant_loader_mcp_server.search.engine.HybridSearchEngine"),
@@ -190,7 +190,7 @@ async def test_search_engine_collection_exists(
             return_value=mock_qdrant_client,
         ),
         patch(
-            "qdrant_loader_mcp_server.search.engine.AsyncOpenAI",
+            "qdrant_loader_mcp_server.search.engine.PatchedAsyncOpenAI",
             return_value=mock_openai_client,
         ),
         patch("qdrant_loader_mcp_server.search.engine.HybridSearchEngine"),
