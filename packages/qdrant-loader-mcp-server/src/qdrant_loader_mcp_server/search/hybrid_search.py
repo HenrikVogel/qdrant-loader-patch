@@ -394,7 +394,7 @@ class HybridSearchEngine:
                 combined_results.append(
                     HybridSearchResult(
                         score=combined_score,
-                        text=text,
+                        text=text + "\nJira Issue Key (ID): " + metadata.get("key"),
                         source_type=info["source_type"],
                         source_title=metadata.get("title", ""),
                         source_url=metadata.get("url"),
