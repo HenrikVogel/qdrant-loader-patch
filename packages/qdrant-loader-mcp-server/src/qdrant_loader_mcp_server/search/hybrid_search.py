@@ -344,32 +344,32 @@ class HybridSearchEngine:
         combined_dict = {}
 
         # Process vector results
-        for result in vector_results:
-            text = result["text"]
-            if text not in combined_dict:
-                metadata = result["metadata"]
-                combined_dict[text] = {
-                    "text": text,
-                    "metadata": metadata,
-                    "source_type": result["source_type"],
-                    "vector_score": result["score"],
-                    "keyword_score": 0.0,
-                }
-
-        # Process keyword results
-        #for result in keyword_results:
+        #for result in vector_results:
         #    text = result["text"]
-        #    if text in combined_dict:
-        #        combined_dict[text]["keyword_score"] = result["score"]
-        #    else:
+        #    if text not in combined_dict:
         #        metadata = result["metadata"]
         #        combined_dict[text] = {
         #            "text": text,
         #            "metadata": metadata,
         #            "source_type": result["source_type"],
-        #            "vector_score": 0.0,
-        #            "keyword_score": result["score"],
+        #            "vector_score": result["score"],
+        #            "keyword_score": 0.0,
         #        }
+
+        # Process keyword results
+        for result in keyword_results:
+            text = result["text"]
+            if text in combined_dict:
+                combined_dict[text]["keyword_score"] = result["score"]
+            else:
+                metadata = result["metadata"]
+                combined_dict[text] = {
+                    "text": text,
+                    "metadata": metadata,
+                    "source_type": result["source_type"],
+                    "vector_score": 0.0,
+                    "keyword_score": result["score"],
+                }
 
         # Calculate combined scores and create results
         combined_results = []
