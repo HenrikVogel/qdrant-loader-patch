@@ -357,19 +357,19 @@ class HybridSearchEngine:
                 }
 
         # Process keyword results
-        for result in keyword_results:
-            text = result["text"]
-            if text in combined_dict:
-                combined_dict[text]["keyword_score"] = result["score"]
-            else:
-                metadata = result["metadata"]
-                combined_dict[text] = {
-                    "text": text,
-                    "metadata": metadata,
-                    "source_type": result["source_type"],
-                    "vector_score": 0.0,
-                    "keyword_score": result["score"],
-                }
+        #for result in keyword_results:
+        #    text = result["text"]
+        #    if text in combined_dict:
+        #        combined_dict[text]["keyword_score"] = result["score"]
+        #    else:
+        #        metadata = result["metadata"]
+        #        combined_dict[text] = {
+        #            "text": text,
+        #            "metadata": metadata,
+        #            "source_type": result["source_type"],
+        #            "vector_score": 0.0,
+        #            "keyword_score": result["score"],
+        #        }
 
         # Calculate combined scores and create results
         combined_results = []
@@ -394,7 +394,7 @@ class HybridSearchEngine:
                 combined_results.append(
                     HybridSearchResult(
                         score=combined_score,
-                        text=text + "\nJira Issue Key (ID): " + metadata.get("key", ""),
+                        text=text + "\n" + metadata.get("key"),
                         source_type=info["source_type"],
                         source_title=metadata.get("title", ""),
                         source_url=metadata.get("url"),
